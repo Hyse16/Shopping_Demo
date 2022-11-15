@@ -153,7 +153,7 @@ class ItemRepositoryTest {
             item.setItemNm("테스트 상품" + i);
             item.setPrice(10000 + i);
             item.setItemDetail("테스트 상품 상세 설명" + i);
-            item.setItemSellStatus(ItemSellStatus.SELL);
+            item.setItemSellStatus(ItemSellStatus.SOLD_OUT);
             item.setStockNumber(100);
             item.setRegTime(LocalDateTime.now());
             item.setUpdateTime(LocalDateTime.now());
@@ -183,8 +183,8 @@ class ItemRepositoryTest {
         System.out.println("total elements = " + itemPagingResult.getTotalElements());
 
         List<Item> resultItemList = itemPagingResult.getContent();
-        for (Item item1 : resultItemList) {
-            System.out.println(resultItemList.toString());
+        for (Item resultItem : resultItemList) {
+            System.out.println(resultItem.toString());
         }
     }
 
