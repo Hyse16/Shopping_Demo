@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "orders")
 @Getter
 @Setter
-@Table(name = "orders")
 public class Order {
 
     @Id
@@ -24,9 +24,8 @@ public class Order {
     @JoinColumn(name = "member_id")
     private Member member;
 
-
-    @OneToMany(mappedBy = "order")
-    private List<OrderItem> orderItemList = new ArrayList<>();
+    @OneToMany(mappedBy = "order",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     private LocalDateTime orderDate;
 
