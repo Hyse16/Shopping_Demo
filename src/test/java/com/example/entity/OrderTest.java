@@ -3,6 +3,7 @@ package com.example.entity;
 import com.example.constant.ItemSellStatus;
 import com.example.repository.ItemRepository;
 import com.example.repository.MemberRepository;
+import com.example.repository.OrderItemRepository;
 import com.example.repository.OrderRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,7 +69,7 @@ class OrderTest {
     @Autowired
     MemberRepository memberRepository;
 
-    public Order CreateOrder() {
+    public Order createOrder() {
         Order order = new Order();
 
         for (int i = 0; i < 3; i++) {
@@ -92,8 +93,41 @@ class OrderTest {
     @Test
     @DisplayName("고아객체 제거 테스트")
     public void orphanRemovalTest() {
-        Order order = this.CreateOrder();
+        Order order = this.createOrder();
         order.getOrderItems().remove(0);
         em.flush();
+
+
+    }
+
+    @Autowired
+    OrderItemRepository orderItemRepository;
+
+    @Test
+    @DisplayName("지연로딩 테스트")
+    public void lazyLoadingTest() {
+        Order order = this.createOrder();
+        Long orderItemId = order.getOrderItems().get(0).getId();
+        em.flush();
+        em.clear();
+
+        OrderItem orderItem = orderItemRepository.findById(orderItemId).orElseThrow(EntityNotFoundException::new);
+        System.out.println("Order class : " + orderItem.getOrder().getClass());
+    }
+
+    @Test
+    @DisplayName("지연 로딩 테스트")
+    public void lazyLoadingTest2() {
+        Order order = this.createOrder();
+        Long orderItemId = order.getOrderItems().get(0).getId();
+        em.flush();
+        em.clear();
+
+        OrderItem orderItem = orderItemRepository.findById(orderItemId).orElseThrow(EntityNotFoundException::new);
+        System.out.println("Order Class : " + orderItem.getOrder().getClass());
+        System.out.println("===============================");
+        orderItem.getOrder().getOrderDate();
+        System.out.println("===============================");
+
     }
 }
