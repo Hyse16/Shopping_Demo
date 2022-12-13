@@ -23,34 +23,33 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping(value = "/admin/item/new")
-    public String itemForm(Model model) {
-        model.addAttribute("ItemFormDto", new ItemFormDto());
+    public String itemForm(Model model){
+        model.addAttribute("itemFormDto", new ItemFormDto());
         return "item/itemForm";
     }
 
     @PostMapping(value = "/admin/item/new")
-    public String itemNew(@Valid ItemFormDto itemFormDto, BindingResult bindingResult, Model model
-            , @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList) {
+    public String itemNew(@Valid ItemFormDto itemFormDto, BindingResult bindingResult,
+                          Model model, @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList){
 
-        if (bindingResult.hasErrors()) {
+        if(bindingResult.hasErrors()){
             return "item/itemForm";
         }
 
-        if (itemImgFileList.get(0).isEmpty() && itemFormDto.getId() == null) {
-            model.addAttribute("errorMessage", "첫번째 상품 이미지는 필수 입력 값입니다.");
+        if(itemImgFileList.get(0).isEmpty() && itemFormDto.getId() == null){
+            model.addAttribute("errorMessage", "첫번째 상품 이미지는 필수 입력 값 입니다.");
             return "item/itemForm";
         }
 
         try {
             itemService.saveItem(itemFormDto, itemImgFileList);
-        } catch (Exception e) {
+        } catch (Exception e){
             model.addAttribute("errorMessage", "상품 등록 중 에러가 발생하였습니다.");
             return "item/itemForm";
         }
 
         return "redirect:/";
     }
-
     @GetMapping(value = "/admin/item/{itemId}")
     public String itemDtl(@PathVariable("itemId") Long itemId, Model model) {
         try {
@@ -59,10 +58,28 @@ public class ItemController {
         } catch (EntityNotFoundException e) {
             model.addAttribute("errorMessage", "존재하지 않는 상품입니다");
             model.addAttribute("itemFormDto", new ItemFormDto());
-
+            return "item/itemForm";
         }
         return "item/itemForm";
-
     }
 
+    @PostMapping(value = "/admin/item/{itemId}")
+    public String itemUpdate(@Valid ItemFormDto itemFormDto, BindingResult bindingResult, @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList, Model model, @PathVariable String itemId) {
+        if (bindingResult.hasErrors()) {
+            return "item/itemForm";
+        }
+
+        if (itemImgFileList.get(0).isEmpty() && itemFormDto.getId() == null) {
+            model.addAttribute("errorMessage", "첫번째 상품이미지는 필수 입력 값입니다");
+            return "item/itemForm";
+        }
+
+        try {
+            itemService.updateItem(itemFormDto, itemImgFileList);
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "상품 수정 중 에러가 발생했습니다");
+            return "item/itemForm";
+        }
+        return "redirect:/";
+    }
 }
